@@ -44,11 +44,11 @@ const cadastrar = async () => {
       <div class="auth-form">
         <form @submit.prevent="cadastrar">
           <p>Nome</p>
-          <input v-model="nome" type="text" placeholder="exemplo@gmail.com" required />
+          <input v-model="nome" type="text" placeholder="Digite seu nome aqui" required />
           <p>CPF</p>
-          <input v-model="cpf" type="text" placeholder="Digite sua senha aqui" required />
+          <input v-model="cpf" type="text" placeholder="Digite seu cpf aqui" required />
           <p>Email</p>
-          <input v-model="email" type="email" placeholder="Digite sua senha aqui" required />
+          <input v-model="email" type="email" placeholder="exemplo@gmail.com" required />
           <p>Partido</p>
           <select v-model="partido" required>
             <option disabled value="">Selecione um partido</option>
