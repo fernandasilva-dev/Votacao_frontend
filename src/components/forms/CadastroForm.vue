@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import api from '../../services/api.js'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const nome = ref('')
 const cpf = ref('')
@@ -49,16 +52,21 @@ const cadastrar = async () => {
       cpf: cpf.value,
       email: email.value,
       senha: senha.value,
-      tipo: tipo.value,
+      tipo: 1,
       partido_id: partido_id.value
     })
 
+    localStorage.setItem('usuarioLogado', JSON.stringify(response.data.usuario))
+
     mensagem.value = response.data.mensagem || 'Cadastro realizado com sucesso!'
+
     nome.value = ''
     cpf.value = ''
     email.value = ''
     senha.value = ''
     partido_id.value = ''
+
+    router.push('/dashboard')
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar.'
   }
