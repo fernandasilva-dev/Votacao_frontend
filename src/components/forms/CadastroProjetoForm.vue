@@ -9,7 +9,7 @@ const titulo = ref('')
 const autor = ref('')
 const ementa = ref('')
 const tipo = ref('')
-const data_votacao = ref('')
+const dt_votacao = ref('')
 const mensagem = ref('')
 
 const tiposProjeto = [
@@ -28,17 +28,17 @@ const cadastrarProjeto = async () => {
             mensagem.value = 'Usuário não identificado. Faça login novamente.'
             return
         }
-        
-        //console.log('Data de votação (v-model):', data_votacao.value)
 
-        const isoDate = data_votacao.value ? data_votacao.value + "T00:00:00Z" : null;
+        const isoDate = dt_votacao.value ? dt_votacao.value + "T00:00:00Z" : null;
+
+        //console.log('Data de votação (v-model):', dt_votacao.value)
 
         const response = await api.post('/projetos', {
             titulo: titulo.value,
             autor: autor.value,
             ementa: ementa.value,
             tipo: tipo.value,
-            data_votacao: isoDate,
+            dt_votacao: isoDate,
             usuario_id: userId,
         })
 
@@ -48,7 +48,7 @@ const cadastrarProjeto = async () => {
         autor.value = ''
         ementa.value = ''
         tipo.value = ''
-        data_votacao.value = ''
+        dt_votacao.value = ''
 
         router.push('/dashboard')
     } catch (error) {
@@ -78,7 +78,7 @@ const cadastrarProjeto = async () => {
                     </select>
 
                     <p>Data de Votação</p>
-                    <input v-model="data_votacao" type="date" required />
+                    <input v-model="dt_votacao" type="date" required />
                     <button type="submit" class="projeto-button">Cadastrar</button>
 
                     <p class="projeto-mensagem" v-if="mensagem">{{ mensagem }}</p>
