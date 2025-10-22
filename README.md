@@ -3,7 +3,6 @@
 Este repositório contém o **front-end** do sistema de gestão de votação de projetos legislativos, desenvolvido em **Vue.js**.  
 O objetivo é permitir o cadastro, listagem e gerenciamento da votação de projetos, vereadores e partidos políticos, com integração ao back-end via API REST.
 
----
 
 ## Tecnologias Utilizadas
 
@@ -12,7 +11,6 @@ O objetivo é permitir o cadastro, listagem e gerenciamento da votação de proj
 - [Axios] para consumo da API  
 - [Vue Router] para navegação entre páginas  
 
----
 
 ## Pré-requisitos
 
