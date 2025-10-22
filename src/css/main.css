@@ -237,7 +237,7 @@ select:focus {
     align-items: center;
     min-height: 85vh;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f6fb; /* leve contraste do fundo */
+    background-color: #f4f6fb;
 }
 
 .projeto-content {
@@ -261,7 +261,7 @@ select:focus {
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 650px; /* largura aumentada */
+    max-width: 650px;
     transition: all 0.3s ease;
 }
 
@@ -323,7 +323,6 @@ select:focus {
     font-size: 0.95rem;
 }
 
-/* 📱 Responsividade */
 @media (max-width: 1024px) {
     .projeto-form {
         max-width: 80%;
