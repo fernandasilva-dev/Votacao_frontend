@@ -28,13 +28,17 @@ const cadastrarProjeto = async () => {
             mensagem.value = 'Usuário não identificado. Faça login novamente.'
             return
         }
+        
+        //console.log('Data de votação (v-model):', data_votacao.value)
+
+        const isoDate = data_votacao.value ? data_votacao.value + "T00:00:00Z" : null;
 
         const response = await api.post('/projetos', {
             titulo: titulo.value,
             autor: autor.value,
             ementa: ementa.value,
             tipo: tipo.value,
-            data_votacao: data_votacao.value,
+            data_votacao: isoDate,
             usuario_id: userId,
         })
 
