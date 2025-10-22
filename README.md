@@ -1,5 +1,29 @@
-# Vue 3 + Vite
+# Projeto Front-End — Sistema de Votação de Projetos Legislativos
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Este repositório contém o **front-end** do sistema de gestão de votação de projetos legislativos, desenvolvido em **Vue.js**.  
+O objetivo é permitir o cadastro, listagem e gerenciamento da votação de projetos, vereadores e partidos políticos, com integração ao back-end via API REST.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+---
+
+## Tecnologias Utilizadas
+
+- [Vue.js 3] Composição API)  
+- [Vite] para build e desenvolvimento  
+- [Axios] para consumo da API  
+- [Vue Router] para navegação entre páginas  
+
+---
+
+## Pré-requisitos
+
+Antes de iniciar, você precisa ter instalado em sua máquina:
+
+- [Node.js](versão 16 ou superior)
+- [Git]
+
+instale as dependências e execute o projeto localmente:
+
+```bash
+  npm install
+  npm run dev
+
