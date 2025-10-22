@@ -66,7 +66,7 @@ const cadastrar = async () => {
     senha.value = ''
     partido_id.value = ''
 
-    router.push('/dashboard')
+    router.push('/login')
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar.'
   }
