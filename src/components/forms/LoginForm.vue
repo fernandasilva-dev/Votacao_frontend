@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { useRouter } from 'vue-router'
 
@@ -11,29 +11,37 @@ const mensagem = ref('')
 
 const usuarioLogado = ref(JSON.parse(localStorage.getItem('usuarioLogado')) || null)
 
+onMounted(() => {
+  if (usuarioLogado.value) {
+    router.push('/vereador/dashboard')
+  }
+})
+
 const login = async () => {
   try {
-    const response = await api.get('/login', {
-      params: {
-        email: email.value,
-        senha: senha.value
-      }
+    const response = await api.post('/login', {
+      email: email.value,
+      senha: senha.value
     })
 
-    localStorage.setItem('usuarioLogado', JSON.stringify(response.data))
-    usuarioLogado.value = response.data
+    localStorage.setItem('usuarioLogado', JSON.stringify(response.data.usuario))
+    usuarioLogado.value = response.data.usuario
 
-    mensagem.value = response.data.message || 'Login realizado com sucesso!'
-
-    router.push('/dashboard')
+    router.push('/vereador/dashboard')
   } catch (error) {
-    mensagem.value = error.response?.data?.message || 'Erro ao tentar logar'
+    mensagem.value = error.response?.data?.mensagem || 'Erro ao tentar logar'
   }
 }
 
-const logout = () => {
-  localStorage.removeItem('usuarioLogado')
-  usuarioLogado.value = null
+const logout = async () => {
+  try {
+    await api.post('/logout')
+    localStorage.removeItem('usuarioLogado')
+    usuarioLogado.value = null
+    router.push('/login')
+  } catch {
+    mensagem.value = 'Erro ao sair'
+  }
 }
 </script>
 
@@ -43,13 +51,7 @@ const logout = () => {
       <h2 class="title">Login</h2>
 
       <div class="auth-form">
-        <div v-if="usuarioLogado">
-          <p>Bem-vindo, {{ usuarioLogado.nome }}!</p>
-          <button class="button" @click="logout">Sair</button>
-        </div>
-
-        <!-- Formulário de login -->
-        <form v-else @submit.prevent="login">
+        <form @submit.prevent="login">
           <p>Email</p>
           <input v-model="email" type="email" placeholder="exemplo@gmail.com" required />
 
@@ -59,7 +61,7 @@ const logout = () => {
           <button type="submit" class="button">Entrar</button>
         </form>
 
-        <p class="link" v-if="!usuarioLogado">
+        <p class="link">
           <router-link to="/cadastro">Não tem uma conta? Cadastre-se</router-link>
         </p>
 

@@ -50,7 +50,7 @@ const cadastrarProjeto = async () => {
         tipo.value = ''
         dt_votacao.value = ''
 
-        router.push('/dashboard')
+        router.push('/vereador/dashboard')
     } catch (error) {
         mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar projeto.'
     }
