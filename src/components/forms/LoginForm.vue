@@ -8,25 +8,31 @@ const router = useRouter()
 const email = ref('')
 const senha = ref('')
 const mensagem = ref('')
+const usuarioLogado = ref(null)
 
-const usuarioLogado = ref(JSON.parse(localStorage.getItem('usuarioLogado')) || null)
-
-onMounted(() => {
-  if (usuarioLogado.value) {
-    router.push('/vereador/dashboard')
+onMounted(async () => {
+  try {
+    const response = await api.get('/me')
+    if (response.data) {
+      usuarioLogado.value = response.data
+      router.push('/vereador/dashboard')
+    }
+  } catch (error) {
   }
 })
 
 const login = async () => {
   try {
-    const response = await api.post('/login', {
-      email: email.value,
-      senha: senha.value
-    })
+    const response = await api.post(
+      '/login',
+      {
+        email: email.value,
+        senha: senha.value,
+      },
+      { withCredentials: true }
+    )
 
-    localStorage.setItem('usuarioLogado', JSON.stringify(response.data.usuario))
     usuarioLogado.value = response.data.usuario
-
     router.push('/vereador/dashboard')
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao tentar logar'
@@ -35,8 +41,7 @@ const login = async () => {
 
 const logout = async () => {
   try {
-    await api.post('/logout')
-    localStorage.removeItem('usuarioLogado')
+    await api.post('/logout', {}, { withCredentials: true })
     usuarioLogado.value = null
     router.push('/login')
   } catch {

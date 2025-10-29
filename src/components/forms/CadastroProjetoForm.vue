@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { useRouter } from 'vue-router'
 
@@ -11,79 +11,86 @@ const ementa = ref('')
 const tipo = ref('')
 const dt_votacao = ref('')
 const mensagem = ref('')
+const userId = ref(null)
 
 const tiposProjeto = [
-    { id: 1, nome: 'Lei Ordinária' },
-    { id: 2, nome: 'Lei Complementar' },
-    { id: 3, nome: 'Emenda Constitucional' },
-    { id: 4, nome: 'Resolução' },
+  { id: 1, nome: 'Lei Ordinária' },
+  { id: 2, nome: 'Lei Complementar' },
+  { id: 3, nome: 'Emenda Constitucional' },
+  { id: 4, nome: 'Resolução' },
 ]
 
-const cadastrarProjeto = async () => {
-    try {
-
-        const userId = 1 //usuario para teste
-
-        if (!userId) {
-            mensagem.value = 'Usuário não identificado. Faça login novamente.'
-            return
-        }
-
-        const isoDate = dt_votacao.value ? dt_votacao.value + "T00:00:00Z" : null;
-
-        //console.log('Data de votação (v-model):', dt_votacao.value)
-
-        const response = await api.post('/projetos', {
-            titulo: titulo.value,
-            autor: autor.value,
-            ementa: ementa.value,
-            tipo: tipo.value,
-            dt_votacao: isoDate,
-            usuario_id: userId,
-        })
-
-        mensagem.value = response.data.mensagem || 'Projeto cadastrado com sucesso!'
-
-        titulo.value = ''
-        autor.value = ''
-        ementa.value = ''
-        tipo.value = ''
-        dt_votacao.value = ''
-
-        router.push('/vereador/dashboard')
-    } catch (error) {
-        mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar projeto.'
+onMounted(async () => {
+  try {
+    const response = await api.get('/me', { withCredentials: true })
+    if (response.data) {
+      autor.value = response.data.nome
+      userId.value = response.data.id
     }
+  } catch (error) {
+    mensagem.value = 'Usuário não autenticado. Faça login novamente.'
+    router.push('/login')
+  }
+})
+
+const cadastrarProjeto = async () => {
+  try {
+    if (!userId.value) {
+      mensagem.value = 'Usuário não identificado. Faça login novamente.'
+      return
+    }
+
+    const isoDate = dt_votacao.value ? dt_votacao.value + "T00:00:00Z" : null
+
+    const response = await api.post(
+      '/projetos',
+      {
+        titulo: titulo.value,
+        autor: autor.value,
+        ementa: ementa.value,
+        tipo: tipo.value,
+        dt_votacao: isoDate,
+        usuario_id: userId.value,
+      },
+      { withCredentials: true }
+    )
+
+    mensagem.value = response.data.mensagem || 'Projeto cadastrado com sucesso!'
+    router.push('/vereador/dashboard')
+  } catch (error) {
+    mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar projeto.'
+  }
 }
 </script>
 
 <template>
-    <div class="projeto-container">
-        <div class="projeto-content">
-            <div class="projeto-form">
-                <form @submit.prevent="cadastrarProjeto">
-                    <p>Título</p>
-                    <input v-model="titulo" type="text" placeholder="Digite o título do projeto" required />
+  <div class="projeto-container">
+    <div class="projeto-content">
+      <div class="projeto-form">
+        <form @submit.prevent="cadastrarProjeto">
+          <p>Título</p>
+          <input v-model="titulo" type="text" placeholder="Digite o título do projeto" required />
 
-                    <p>Autor</p>
-                    <input v-model="autor" type="text" placeholder="Digite o nome do autor" required />
+          <p>Autor</p>
+          <input v-model="autor" type="text" placeholder="Nome do autor" readonly />
 
-                    <p>Ementa</p>
-                    <textarea v-model="ementa" placeholder="Descreva a ementa do projeto" required></textarea>
+          <p>Ementa</p>
+          <textarea v-model="ementa" placeholder="Descreva a ementa do projeto" required></textarea>
 
-                    <p>Tipo</p>
-                    <select v-model="tipo" required>
-                        <option disabled value="">Selecione o tipo</option>
-                        <option v-for="t in tiposProjeto" :key="t.id" :value="t.nome">{{ t.nome }}</option>
-                    </select>
+          <p>Tipo</p>
+          <select v-model="tipo" required>
+            <option disabled value="">Selecione o tipo</option>
+            <option v-for="t in tiposProjeto" :key="t.id" :value="t.nome">{{ t.nome }}</option>
+          </select>
 
-                    <p>Data de Votação</p>
-                    <input v-model="dt_votacao" type="date" required />
-                    <button type="submit" class="projeto-button">Cadastrar</button>
+          <p>Data de Votação</p>
+          <input v-model="dt_votacao" type="date" required />
 
-                    <p class="projeto-mensagem" v-if="mensagem">{{ mensagem }}</p>
-                </form>
-            </div>
-        </div>
+          <button type="submit" class="projeto-button">Cadastrar</button>
+
+          <p class="projeto-mensagem" v-if="mensagem">{{ mensagem }}</p>
+        </form>
+      </div>
     </div>
+  </div>
 </template>
