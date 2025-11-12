@@ -24,6 +24,7 @@ const routes = [
       { path: '', redirect: 'dashboard' },
       { path: 'dashboard', name: 'VotacoesAdmin', component: () => import('../views/Admin/Votacoes.vue') },
       { path: 'cadastrar-partido', name: 'AdminCadastrarPartido', component: () => import('../views/Admin/CadastrarPartido.vue') },
+      { path: 'aprovar-projeto', name: 'AprovacaoAdmin', component: () => import('../views/Admin/AprovacaoAdmin.vue')}
     ]
   },
 
