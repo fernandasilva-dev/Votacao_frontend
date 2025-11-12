@@ -6,11 +6,6 @@
         <span>Votações</span>
       </router-link>
 
-      <router-link to="/vereador/cadastrar-projeto" class="menu-item" active-class="active">
-        <img src="../../assets/images/projeto.png" alt="" class="menu-icon">
-        <span>Cadastrar Projeto</span>
-      </router-link>
-
       <router-link to="/vereador/meus-projetos" class="menu-item" active-class="active">
         <img src="../../assets/images/meuprojeto.png" alt="" class="menu-icon">
         <span>Meus Projetos</span>

@@ -47,17 +47,17 @@ const partidos = [
 
 const cadastrar = async () => {
   try {
+    const partidoSelecionado = partido_id.value ? partido_id.value : null
+
     const response = await api.post('/usuarios', {
       nome: nome.value,
       cpf: cpf.value,
       email: email.value,
       senha: senha.value,
-      tipo: 1,
-      partido_id: partido_id.value
+      partido_id: partidoSelecionado,
     })
 
     localStorage.setItem('usuarioLogado', JSON.stringify(response.data.usuario))
-
     mensagem.value = response.data.mensagem || 'Cadastro realizado com sucesso!'
 
     nome.value = ''
@@ -65,7 +65,6 @@ const cadastrar = async () => {
     email.value = ''
     senha.value = ''
     partido_id.value = ''
-
     router.push('/login')
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar.'
@@ -90,8 +89,8 @@ const cadastrar = async () => {
           <input v-model="email" type="email" placeholder="exemplo@gmail.com" required />
 
           <p>Partido</p>
-          <select v-model="partido_id" required>
-            <option disabled value="">Selecione um partido</option>
+          <select v-model="partido_id">
+            <option value="">Sem partido (Administrador)</option>
             <option v-for="p in partidos" :key="p.id" :value="p.id">{{ p.nome }}</option>
           </select>
 

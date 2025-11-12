@@ -11,6 +11,11 @@
         <img src="../../assets/images/meuprojeto.png" alt="" class="menu-icon">
         <span>Cadastrar Partido</span>
       </router-link>
+      
+      <router-link to="/admin/cadastrar-projeto" class="menu-item" active-class="active">
+        <img src="../../assets/images/projeto.png" alt="" class="menu-icon">
+        <span>Cadastrar Projeto</span>
+      </router-link>
 
       <router-link to="/admin/aprovar-projeto" class="menu-item" active-class="active">
         <img src="../../assets/images/meuprojeto.png" alt="" class="menu-icon">

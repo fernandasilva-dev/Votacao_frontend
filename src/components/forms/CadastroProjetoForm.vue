@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import api from '../../services/api.js'
 import { useRouter } from 'vue-router'
 
@@ -20,18 +20,19 @@ const tiposProjeto = [
   { id: 4, nome: 'Resolução' },
 ]
 
-onMounted(async () => {
+const verificarLogin = async () => {
   try {
     const response = await api.get('/me', { withCredentials: true })
     if (response.data) {
-      autor.value = response.data.nome
       userId.value = response.data.id
     }
   } catch (error) {
     mensagem.value = 'Usuário não autenticado. Faça login novamente.'
     router.push('/login')
   }
-})
+}
+
+verificarLogin()
 
 const cadastrarProjeto = async () => {
   try {
@@ -40,7 +41,7 @@ const cadastrarProjeto = async () => {
       return
     }
 
-    const isoDate = dt_votacao.value ? dt_votacao.value + "T00:00:00Z" : null
+    const isoDate = dt_votacao.value ? dt_votacao.value + 'T00:00:00Z' : null
 
     const response = await api.post(
       '/projetos',
@@ -56,7 +57,7 @@ const cadastrarProjeto = async () => {
     )
 
     mensagem.value = response.data.mensagem || 'Projeto cadastrado com sucesso!'
-    router.push('/vereador/dashboard')
+    router.push('/admin/dashboard')
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar projeto.'
   }
@@ -72,7 +73,12 @@ const cadastrarProjeto = async () => {
           <input v-model="titulo" type="text" placeholder="Digite o título do projeto" required />
 
           <p>Autor</p>
-          <input v-model="autor" type="text" placeholder="Nome do autor" readonly />
+          <input
+            v-model="autor"
+            type="text"
+            placeholder="Digite o nome do vereador autor do projeto"
+            required
+          />
 
           <p>Ementa</p>
           <textarea v-model="ementa" placeholder="Descreva a ementa do projeto" required></textarea>

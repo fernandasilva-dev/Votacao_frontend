@@ -12,10 +12,10 @@ const usuarioLogado = ref(null)
 
 onMounted(async () => {
   try {
-    const response = await api.get('/me')
+    const response = await api.get('/me', { withCredentials: true })
     if (response.data) {
       usuarioLogado.value = response.data
-      router.push('/vereador/dashboard')
+      redirecionarPorTipo(response.data.tipo)
     }
   } catch (error) {
   }
@@ -33,9 +33,17 @@ const login = async () => {
     )
 
     usuarioLogado.value = response.data.usuario
-    router.push('/vereador/dashboard')
+    redirecionarPorTipo(usuarioLogado.value.tipo)
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao tentar logar'
+  }
+}
+
+const redirecionarPorTipo = (tipo) => {
+  if (tipo === 2) {
+    router.push('/admin/dashboard')
+  } else {
+    router.push('/vereador/dashboard')
   }
 }
 
