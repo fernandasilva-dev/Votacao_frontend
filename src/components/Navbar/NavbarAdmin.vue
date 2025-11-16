@@ -9,7 +9,7 @@
 
       <router-link to="/admin/cadastrar-partido" class="menu-item" active-class="active">
         <img src="../../assets/images/meuprojeto.png" alt="" class="menu-icon">
-        <span>Cadastrar Partido</span>
+        <span>Gerenciar Partidos</span>
       </router-link>
       
       <router-link to="/admin/cadastrar-projeto" class="menu-item" active-class="active">

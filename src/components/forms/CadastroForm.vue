@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from '../../services/api.js'
 import { useRouter } from 'vue-router'
 
@@ -12,38 +12,16 @@ const senha = ref('')
 const partido_id = ref('')
 const mensagem = ref('')
 
-const partidos = [
-  { id: 1, nome: 'Avante' },
-  { id: 2, nome: 'Cidadania' },
-  { id: 3, nome: 'DC' },
-  { id: 4, nome: 'MDB' },
-  { id: 5, nome: 'Mobiliza' },
-  { id: 6, nome: 'Novo' },
-  { id: 7, nome: 'Patriota' },
-  { id: 8, nome: 'PCdoB' },
-  { id: 9, nome: 'PCB' },
-  { id: 10, nome: 'PCO' },
-  { id: 11, nome: 'PDT' },
-  { id: 12, nome: 'PL' },
-  { id: 13, nome: 'PMB' },
-  { id: 14, nome: 'PMN' },
-  { id: 15, nome: 'PODE' },
-  { id: 16, nome: 'PP' },
-  { id: 17, nome: 'PRTB' },
-  { id: 18, nome: 'PSB' },
-  { id: 19, nome: 'PSC' },
-  { id: 20, nome: 'PSD' },
-  { id: 21, nome: 'PSDB' },
-  { id: 22, nome: 'PSOL' },
-  { id: 23, nome: 'PSTU' },
-  { id: 24, nome: 'PT' },
-  { id: 25, nome: 'PTB' },
-  { id: 26, nome: 'PV' },
-  { id: 27, nome: 'REDE' },
-  { id: 28, nome: 'Solidariedade' },
-  { id: 29, nome: 'UP' },
-  { id: 30, nome: 'UNIÃO' },
-]
+const partidos = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await api.get('/partidos')
+    partidos.value = response.data
+  } catch (error) {
+    console.error('Erro ao buscar partidos:', error)
+  }
+})
 
 const cadastrar = async () => {
   try {
@@ -91,7 +69,11 @@ const cadastrar = async () => {
           <p>Partido</p>
           <select v-model="partido_id">
             <option value="">Sem partido (Administrador)</option>
-            <option v-for="p in partidos" :key="p.id" :value="p.id">{{ p.nome }}</option>
+
+            <!-- LISTA CARREGADA DO BANCO -->
+            <option v-for="p in partidos" :key="p.id" :value="p.id">
+              {{ p.nome }}
+            </option>
           </select>
 
           <p>Senha</p>
