@@ -14,11 +14,11 @@ onMounted(async () => {
   try {
     const response = await api.get('/me', { withCredentials: true })
     if (response.data) {
+      localStorage.setItem('usuario', JSON.stringify(response.data))
       usuarioLogado.value = response.data
       redirecionarPorTipo(response.data.tipo)
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 })
 
 const login = async () => {
@@ -33,6 +33,7 @@ const login = async () => {
     )
 
     usuarioLogado.value = response.data.usuario
+    localStorage.setItem('usuario', JSON.stringify(response.data.usuario))
     redirecionarPorTipo(usuarioLogado.value.tipo)
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao tentar logar'
@@ -51,6 +52,7 @@ const logout = async () => {
   try {
     await api.post('/logout', {}, { withCredentials: true })
     usuarioLogado.value = null
+    localStorage.removeItem('usuario')
     router.push('/login')
   } catch {
     mensagem.value = 'Erro ao sair'

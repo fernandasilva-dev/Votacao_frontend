@@ -77,7 +77,17 @@ const cadastrar = async () => {
           </select>
 
           <p>Senha</p>
-          <input v-model="senha" type="password" placeholder="Digite sua senha" required />
+          <input
+            type="password"
+            v-model="senha"
+            placeholder="Digite sua senha"
+          />
+          <ul class="senha-requisitos">
+            <li :class="{ ok: senha.length >= 8 }">• Mínimo 8 caracteres</li>
+            <li :class="{ ok: /[A-Z]/.test(senha) }">• 1 letra maiúscula</li>
+            <li :class="{ ok: /[0-9]/.test(senha) }">• 1 número</li>
+            <li :class="{ ok: /[^A-Za-z0-9]/.test(senha) }">• 1 símbolo (ex: ! @ # $ % & *)</li>
+          </ul>
 
           <button type="submit" class="button">Cadastrar</button>
 

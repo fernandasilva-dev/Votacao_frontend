@@ -1,7 +1,16 @@
 <template>
   <h1 class="fullscreen-title">Projetos em Análise</h1>
+
   <div class="home-container">
-    <div v-for="projeto in projetos" :key="projeto.id" class="projeto-card">
+    <p v-if="projetos.length === 0" class="nenhum-projeto">
+      Nenhum projeto cadastrado.
+    </p>
+
+    <div
+      v-else
+      v-for="projeto in projetos"
+      :key="projeto.id"
+      class="projeto-card">
       <div class="projeto-top">
         <div class="icon-column">
           <img src="../../assets/images/info.png" alt="Informações" class="info-icon" />
@@ -17,11 +26,14 @@
             <p><b>Data:</b> {{ formatarData(projeto.dt_votacao) }}</p>
           </div>
 
-          <p class="status-text" :class="{
-            'status-aprovacao': projeto.statusSimulado === 'Em aprovação',
-            'status-aprovado': projeto.statusSimulado === 'Aprovado',
-            'status-reprovado': projeto.statusSimulado === 'Reprovado'
-          }">
+          <p
+            class="status-text"
+            :class="{
+              'status-aprovacao': projeto.statusSimulado === 'Em aprovação',
+              'status-aprovado': projeto.statusSimulado === 'Aprovado',
+              'status-reprovado': projeto.statusSimulado === 'Reprovado'
+            }"
+          >
             {{ projeto.statusSimulado }}
           </p>
 
@@ -200,6 +212,13 @@ onMounted(carregarProjetos)
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+
+.nenhum-projeto {
+  font-size: 1.3rem;
+  color: #333;
+  margin-top: 2rem;
+  text-align: center;
 }
 
 @media (max-width: 720px) {

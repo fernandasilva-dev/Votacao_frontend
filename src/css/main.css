@@ -351,6 +351,16 @@ select:focus {
     }
 }
 
+.senha-requisitos {
+  list-style: none;
+  padding: 0;
+  font-size: 15px;
+  color: #828282;
+}
+.senha-requisitos .ok {
+  color: #29b729;
+}
+
 @media (max-width: 480px) {
     .projeto-form {
         width: 95%;

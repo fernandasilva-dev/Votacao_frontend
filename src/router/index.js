@@ -11,6 +11,7 @@ const routes = [
   {
     path: '/vereador',
     component: DashboardVereador,
+    meta: {requiresAuth: true, role: 'vereador'},
     children: [
       { path: '', redirect: 'dashboard' },
       { path: 'dashboard', name: 'Votacoes', component: () => import('../views/Vereador/Votacoes.vue') },
@@ -19,6 +20,7 @@ const routes = [
   {
     path: '/admin',
     component: DashboardAdmin,
+    meta: {requiresAuth: true, role: 'admin'},
     children: [
       { path: '', redirect: 'dashboard' },
       { path: 'dashboard', name: 'VotacoesAdmin', component: () => import('../views/Admin/Votacoes.vue') },
@@ -35,5 +37,23 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  const usuario = JSON.parse(localStorage.getItem('usuario'))
+
+  if (to.meta.requiresAuth && !usuario) {
+    return next('/login')
+  }
+
+  const tipoMap = {
+    1: 'vereador',
+    2: 'admin'
+  }
+
+  if (to.meta.role && tipoMap[usuario?.tipo] !== to.meta.role) {
+    return next('/login')}
+  next()
+})
+
 
 export default router
