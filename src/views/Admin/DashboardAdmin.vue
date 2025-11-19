@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar-container">
+  <div v-if="carregado" class="navbar-container">
     <Navbar />
     <main class="main-content">
       <router-view />
@@ -8,5 +8,12 @@
 </template>
 
 <script setup>
-  import Navbar from '../../components/Navbar/NavbarAdmin.vue'
+import { ref, onMounted } from 'vue'
+import Navbar from '../../components/Navbar/NavbarAdmin.vue' // ou vereador
+
+const carregado = ref(false)
+
+onMounted(() => {
+  carregado.value = true
+})
 </script>

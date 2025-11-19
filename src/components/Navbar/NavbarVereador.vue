@@ -42,7 +42,7 @@ const toggleLogout = () => {
 const logout = async () => {
   try {
     await api.post('/logout')
-    localStorage.removeItem('usuarioLogado')
+    localStorage.removeItem('usuario')
     router.push('/login')
   } catch (err) {
     console.error('Erro ao sair:', err)
