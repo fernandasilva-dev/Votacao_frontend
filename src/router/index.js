@@ -15,6 +15,7 @@ const routes = [
     children: [
       { path: '', redirect: 'dashboard' },
       { path: 'dashboard', name: 'Votacoes', component: () => import('../views/Vereador/Votacoes.vue') },
+      { path: 'profile-vereador', name: 'ProfileVereador', component: () => import('../views/Vereador/ProfileVereador.vue') },
     ]
   },
   {
@@ -27,6 +28,7 @@ const routes = [
       { path: 'cadastrar-partido', name: 'AdminCadastrarPartido', component: () => import('../views/Admin/CadastrarPartido.vue') },
       { path: 'aprovar-projeto', name: 'AprovacaoAdmin', component: () => import('../views/Admin/AprovacaoAdmin.vue')},
       { path: 'cadastrar-projeto', name: 'CadastrarProjeto', component: () => import('../views/Admin/CadastrarProjeto.vue') },
+      { path: 'profile-admin', name: 'ProfileAdmin', component: () => import('../views/Admin/ProfileAdmin.vue') },
     ]
   },
 
