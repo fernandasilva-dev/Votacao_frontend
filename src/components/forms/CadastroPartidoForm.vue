@@ -9,11 +9,18 @@ const mensagem = ref('')
 const partidos = ref([])
 const usuarios = ref([])
 
+const abrirEditar = ref(false)
+const abrirExcluir = ref(false)
+
+const partidoSelecionado = ref({ id: null, nome: '', sigla: '' })
+const novoNome = ref('')
+const novaSigla = ref('')
+
+const idExcluir = ref(null)
+
 const carregarDados = async () => {
   try {
     const respPartidos = await api.get('/partidos')
-
-    //ORDENA OS PARTIDOS POR NOME (A - Z)
     partidos.value = respPartidos.data.sort((a, b) =>
       a.nome.localeCompare(b.nome)
     )
@@ -52,66 +59,69 @@ const vereadoresDoPartido = (idPartido) => {
   return usuarios.value.filter(u => u.partido_id === idPartido && u.tipo === 1)
 }
 
-const editarPartido = (partido) => {
-  const novoNome = prompt("Novo nome do partido:", partido.nome)
-  const novaSigla = prompt("Nova sigla:", partido.sigla)
-
-  if (!novoNome || !novaSigla) return
-
-  api.put(`/partidos/${partido.id}`, {
-    nome: novoNome,
-    sigla: novaSigla
-  }).then(() => {
-    mensagem.value = "Partido editado com sucesso!"
-    carregarDados()
-  }).catch(() => {
-    mensagem.value = "Erro ao editar."
-  })
+const abrirPopupEditar = (partido) => {
+  partidoSelecionado.value = { ...partido }
+  novoNome.value = partido.nome
+  novaSigla.value = partido.sigla
+  abrirEditar.value = true
 }
 
-const excluirPartido = (id) => {
-  if (!confirm("Tem certeza que deseja excluir este partido?")) return
+const salvarEdicao = async () => {
+  try {
+    await api.put(`/partidos/${partidoSelecionado.value.id}`, {
+      nome: novoNome.value,
+      sigla: novaSigla.value
+    })
 
-  api.delete(`/partidos/${id}`)
-    .then(() => {
-      mensagem.value = "Partido excluído com sucesso!"
-      carregarDados()
-    })
-    .catch(() => {
-      mensagem.value = "Erro ao excluir partido."
-    })
+    mensagem.value = "Partido editado com sucesso!"
+    abrirEditar.value = false
+    carregarDados()
+
+  } catch (e) {
+    mensagem.value = "Erro ao editar partido."
+  }
+}
+
+const abrirPopupExcluir = (id) => {
+  idExcluir.value = id
+  abrirExcluir.value = true
+}
+
+const confirmarExclusao = async () => {
+  try {
+    await api.delete(`/partidos/${idExcluir.value}`)
+    mensagem.value = "Partido excluído com sucesso!"
+    abrirExcluir.value = false
+    carregarDados()
+  } catch (e) {
+    mensagem.value = "Erro ao excluir partido."
+  }
 }
 </script>
 
 <template>
   <div class="projeto-container">
     <div class="projeto-content">
-
       <div class="projeto-form" role="region" aria-label="Cadastrar Partido">
         <form @submit.prevent="cadastrarPartido" class="form-vertical">
-
           <p>Nome do Partido</p>
           <input v-model="nome" type="text" placeholder="Digite o nome do partido" required />
-
           <p>Sigla</p>
           <input v-model="sigla" type="text" placeholder="Digite a sigla" required />
-
           <button type="submit" class="projeto-button">Cadastrar</button>
-
         </form>
       </div>
 
       <div class="tabela-container" aria-live="polite">
-        <h2 class="projeto-title" style="margin-top: 100px">Partidos e Vereadores Cadastrados</h2>
-
+        <h2 class="projeto-title">Partidos e Vereadores Cadastrados</h2>
         <div class="tabela-wrapper">
           <table class="tabela" role="table">
             <thead>
               <tr>
-                <th style="width:120px">Sigla</th>
+                <th>Sigla</th>
                 <th>Nome</th>
                 <th>Vereadores</th>
-                <th style="width:140px; text-align:center;">Ações</th>
+                <th>Ações</th>
               </tr>
             </thead>
 
@@ -119,7 +129,6 @@ const excluirPartido = (id) => {
               <tr v-for="partido in partidos" :key="partido.id">
                 <td>{{ partido.sigla }}</td>
                 <td>{{ partido.nome }}</td>
-
                 <td>
                   <ul class="vereadores-list">
                     <li v-for="v in vereadoresDoPartido(partido.id)" :key="v.id">
@@ -132,8 +141,8 @@ const excluirPartido = (id) => {
                 </td>
 
                 <td class="acoes">
-                  <button class="btn-edit" @click="editarPartido(partido)">Editar</button>
-                  <button class="btn-delete" @click="excluirPartido(partido.id)">Excluir</button>
+                  <button class="btn-edit" @click="abrirPopupEditar(partido)">Editar</button>
+                  <button class="btn-delete" @click="abrirPopupExcluir(partido.id)">Excluir</button>
                 </td>
 
               </tr>
@@ -141,12 +150,39 @@ const excluirPartido = (id) => {
           </table>
         </div>
       </div>
+
       <div v-if="mensagem" class="mensagem-global">
         {{ mensagem }}
       </div>
 
     </div>
   </div>
+
+  <div v-if="abrirEditar" class="overlay">
+    <div class="popup auth-form">
+      <h3>Editar Partido</h3>
+      <p>Nome</p>
+      <input v-model="novoNome" type="text" />
+      <p>Sigla</p>
+      <input v-model="novaSigla" type="text" />
+      <div class="linha-botoes">
+        <button class="button" @click="salvarEdicao">Salvar</button>
+        <button class="button cancelar" @click="abrirEditar = false">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="abrirExcluir" class="overlay">
+    <div class="popup auth-form">
+      <h3>Excluir Partido</h3>
+      <p>Tem certeza que deseja excluir este partido?</p>
+      <div class="linha-botoes">
+        <button class="button" @click="confirmarExclusao">Sim, excluir</button>
+        <button class="button cancelar" @click="abrirExcluir = false">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>
@@ -253,21 +289,49 @@ const excluirPartido = (id) => {
   transition: 0.2s;
 }
 
-.btn-edit {
-  background: #ffc107;
-  color: #000;
+.btn-edit { background: #ffc107; color: #000; }
+.btn-edit:hover { background: #e0a800; }
+
+.btn-delete { background: #dc3545; color: #fff; }
+.btn-delete:hover { background: #b02a37; }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px);
+  z-index: 9999;
 }
 
-.btn-edit:hover {
-  background: #e0a800;
+.popup {
+  width: 100%;
+  max-width: 360px;
+  animation: aparecer 0.25s ease-out;
 }
 
-.btn-delete {
-  background: #dc3545;
-  color: #fff;
+.linha-botoes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 15px;
 }
 
-.btn-delete:hover {
-  background: #b02a37;
+.button {
+  padding: 8px 12px;
+  background: #1e50b5;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.cancelar {
+  background: #aaa;
 }
 </style>
