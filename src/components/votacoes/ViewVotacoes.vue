@@ -46,6 +46,8 @@ import { useRouter, useRoute } from "vue-router"
 import api from "../../services/api.js"
 
 const router = useRouter()
+const route = useRoute()
+
 const projetos = ref([])
 
 const projetosFiltrados = computed(() =>
@@ -60,9 +62,6 @@ const carregarProjetos = async () => {
     console.error("Erro ao carregar projetos:", erro)
   }
 }
-
-const router = useRouter()
-const route = useRoute()
 
 const irParaVotacao = (id) => {
   const role = route.meta.role
