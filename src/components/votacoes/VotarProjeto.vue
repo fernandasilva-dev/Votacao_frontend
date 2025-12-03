@@ -131,9 +131,7 @@ const carregarDados = async () => {
     const projetoResp = await api.get(`/projetos/${props.projetoId}`)
     projeto.value = projetoResp.data
 
-    votacaoEncerrada.value =
-      projeto.value?.status === 'encerrada' ||
-      projeto.value?.votacao === false
+    votacaoEncerrada.value = projeto.value?.estado !== 1
 
     await carregarVotos()
 
