@@ -3,7 +3,6 @@
     <p v-if="projetosFiltrados.length === 0" class="nenhum-projeto">
       Nenhum projeto liberado para votação.
     </p>
-    
     <div
       v-else
       v-for="projeto in projetosFiltrados"
@@ -43,7 +42,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import api from "../../services/api.js"
 
 const router = useRouter()
@@ -55,15 +54,24 @@ const projetosFiltrados = computed(() =>
 
 const carregarProjetos = async () => {
   try {
-    const response = await api.get("/projetos") // <<< busca tudo
+    const response = await api.get("/projetos")
     projetos.value = response.data
   } catch (erro) {
     console.error("Erro ao carregar projetos:", erro)
   }
 }
 
+const router = useRouter()
+const route = useRoute()
+
 const irParaVotacao = (id) => {
-  router.push({ name: 'VotacaoProjeto', params: { id } })
+  const role = route.meta.role
+
+  if (role === 'admin') {
+    router.push({ name: 'VotacaoProjetoAdmin', params: { id } })
+  } else {
+    router.push({ name: 'VotacaoProjeto', params: { id } })
+  }
 }
 
 const formatarData = (data) => new Date(data).toLocaleDateString("pt-BR")

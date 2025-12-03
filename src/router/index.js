@@ -31,6 +31,7 @@ const routes = [
       { path: 'aprovar-projeto', name: 'AprovacaoAdmin', component: () => import('../views/Admin/AprovacaoAdmin.vue')},
       { path: 'cadastrar-projeto', name: 'CadastrarProjeto', component: () => import('../views/Admin/CadastrarProjeto.vue') },
       { path: 'profile-admin', name: 'ProfileAdmin', component: () => import('../views/Admin/ProfileAdmin.vue') },
+      { path: 'votacao/:id', name: 'VotacaoProjetoAdmin', component: () => import('../views/Admin/VotacaoProjetoAdmin.vue'), props: route => ({ projetoId: route.params.id }) }
     ]
   },
 
