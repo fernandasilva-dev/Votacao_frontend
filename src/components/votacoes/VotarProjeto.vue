@@ -83,6 +83,18 @@ const props = defineProps({
   }
 });
 
+const optionMap = {
+  0: 'sim',
+  1: 'nao',
+  2: 'abstencao'
+};
+
+const reverseOptionMap = {
+  sim: 0,
+  nao: 1,
+  abstencao: 2
+};
+
 const usuario = ref(null)
 const projeto = ref(null)
 const votos = ref([])
@@ -161,10 +173,14 @@ const carregarVotos = async () => {
 
 const counts = computed(() => {
   const map = { sim: 0, nao: 0, abstencao: 0 }
+
   votos.value.forEach(v => {
-    const o = String(v.opcao).toLowerCase()
-    if (map[o] !== undefined) map[o]++
+    const opcaoTexto = optionMap[v.opcao]
+    if (opcaoTexto && map[opcaoTexto] !== undefined) {
+      map[opcaoTexto]++
+    }
   })
+
   return map
 })
 
@@ -200,7 +216,7 @@ const confirmarEVotar = async (opcao) => {
     await api.post('/votos', {
       usuario_id: usuario.value.id,
       projeto_id: props.projetoId,
-      opcao
+      opcao: reverseOptionMap[opcao]
     })
 
     mensagem.value = 'Voto registrado com sucesso!'
