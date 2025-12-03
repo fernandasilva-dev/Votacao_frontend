@@ -11,6 +11,7 @@
       v-for="projeto in projetos"
       :key="projeto.id"
       class="projeto-card">
+
       <div class="projeto-top">
         <div class="icon-column">
           <img src="../../assets/images/info.png" alt="Informações" class="info-icon" />
@@ -28,28 +29,50 @@
 
           <p
             class="status-text"
-            :class="{
-              'status-aprovacao': projeto.statusSimulado === 'Em aprovação',
-              'status-aprovado': projeto.statusSimulado === 'Aprovado',
-              'status-reprovado': projeto.statusSimulado === 'Reprovado'
-            }"
-          >
-            {{ projeto.statusSimulado }}
+            :class="projeto.estado === 1 
+                      ? 'status-aberta' 
+                      : projeto.estado === 0 
+                        ? 'status-encerrada' 
+                        : 'status-aguardando'"
+            >
+              {{
+                projeto.estado === 1
+                  ? 'Votação Aberta'
+                  : projeto.estado === 0
+                    ? 'Votação Encerrada'
+                    : 'Aguardando Abertura'
+              }}
           </p>
 
-          <div class="botoes-container">
-            <button @click="aprovar(projeto)" class="button">
-              <img src="../../assets/images/aprovar.png" alt="Aprovar" class="icon-btn" />
-              Aprovar
-            </button>
 
-            <button @click="reprovar(projeto)" class="button reject">
-              <img src="../../assets/images/reprovar.png" alt="Reprovar" class="icon-btn" />
-              Não Aprovar
+          <div class="botoes-container">
+            <button
+              class="button"
+              :class="projeto.estado === 1 ? 'encerrar' : 'abrir'"
+              @click="abrirModal(projeto)"
+            >
+              {{ projeto.estado === 1 ? 'Encerrar Votação' : 'Abrir Votação' }}
             </button>
           </div>
+
         </div>
       </div>
+    </div>
+  </div>
+
+  <div v-if="modalVisivel" class="overlay">
+    <div class="popup auth-form">
+      <h3 class="title">{{ modalTitulo }}</h3>
+
+      <p class="texto-modal">{{ modalMensagem }}</p>
+
+      <button class="form-button" @click="confirmarAlteracao">
+        Confirmar
+      </button>
+
+      <button class="btn-fechar" @click="fecharModal">
+        Cancelar
+      </button>
     </div>
   </div>
 </template>
@@ -60,24 +83,54 @@ import api from '../../services/api.js'
 
 const projetos = ref([])
 
+const modalVisivel = ref(false)
+const modalProjeto = ref(null)
+const modalTitulo = ref("")
+const modalMensagem = ref("")
+const novoEstado = ref(null)
+
 const carregarProjetos = async () => {
   try {
     const response = await api.get('/projetos')
-    projetos.value = response.data.map((p) => ({
-      ...p,
-      statusSimulado: 'Em aprovação'
-    }))
+    projetos.value = response.data
   } catch (erro) {
     console.error('Erro ao carregar projetos:', erro)
   }
 }
 
-const aprovar = (projeto) => {
-  projeto.statusSimulado = 'Aprovado'
+const abrirModal = (projeto) => {
+  modalProjeto.value = projeto
+  novoEstado.value = projeto.estado === 1 ? 0 : 1
+
+  modalTitulo.value = projeto.estado === 1
+    ? "Encerrar Votação"
+    : "Abrir Votação"
+
+  modalMensagem.value = projeto.estado === 1
+    ? "Tem certeza que deseja ENCERRAR a votação deste projeto?"
+    : "Tem certeza que deseja ABRIR a votação deste projeto?"
+
+  modalVisivel.value = true
 }
 
-const reprovar = (projeto) => {
-  projeto.statusSimulado = 'Reprovado'
+const fecharModal = () => {
+  modalVisivel.value = false
+}
+
+const confirmarAlteracao = async () => {
+  try {
+    await api.put(`/projetos/${modalProjeto.value.id}`, {
+      ...modalProjeto.value,
+      estado: novoEstado.value
+    })
+
+    modalProjeto.value.estado = novoEstado.value
+
+  } catch (erro) {
+    console.error("Erro ao alterar estado:", erro)
+  }
+
+  fecharModal()
 }
 
 const formatarData = (data) => new Date(data).toLocaleDateString('pt-BR')
@@ -86,6 +139,106 @@ onMounted(carregarProjetos)
 </script>
 
 <style scoped>
+.status-aguardando {
+  color: #e39d00;
+  font-weight: bold;
+}
+
+.status-aberta {
+  color: green;
+  font-weight: bold;
+}
+
+.status-encerrada {
+  color: red;
+  font-weight: bold;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  z-index: 999;
+}
+
+.popup {
+  position: fixed;
+  top: 20%;
+  left: 43%;
+  background: #ffffff;
+  width: 90%;
+  max-width: 450px;
+  padding: 25px 30px;
+  border-radius: 16px;
+  box-shadow: 0px 6px 16px rgba(0,0,0,0.25);
+  animation: popupShow 0.18s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes popupShow {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.title {
+  text-align: center;
+  color: #1e50b5;
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+}
+
+.texto-modal {
+  text-align: center;
+  font-size: 1.05rem;
+  margin-bottom: 15px;
+}
+
+.form-button {
+  width: 101%;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #1e50b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.form-button:hover {
+  background-color: #163f93;
+}
+
+.btn-fechar {
+  width: 101%;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #838383;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-fechar:hover {
+  background-color: #666666;
+}
+
 .home-container {
   display: flex;
   flex-direction: column;
@@ -117,7 +270,7 @@ onMounted(carregarProjetos)
 
 .projeto-top {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .icon-column {
@@ -137,7 +290,6 @@ onMounted(carregarProjetos)
   color: #1a1a1a;
   font-size: 1.45rem;
   font-weight: 600;
-  margin-bottom: 0.8rem;
 }
 
 .projeto-info p {
@@ -147,38 +299,22 @@ onMounted(carregarProjetos)
   text-align: justify;
 }
 
-
 .status-text {
   margin-top: 1.9rem;
   font-weight: 600;
   font-size: 1.3rem;
 }
 
-.status-aprovacao {
-  color: #e39d00;
-}
-
-.status-aprovado {
-  color: #0d820d;
-}
-
-.status-reprovado {
-  color: #d62828;
-}
-
 .botoes-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
+  justify-content: center;
   margin-top: 20px;
-  flex-wrap: wrap;
 }
 
 .button {
-  flex: 1 1 40%;
+  flex: 1 1 0%;
   min-width: 380px;
-  max-width: 420px;
+  max-width: 100%;
   height: 45px;
   background-color: #1e50b5;
   color: #fff;
@@ -186,32 +322,10 @@ onMounted(carregarProjetos)
   border-radius: 10px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  transition: background-color 0.2s ease;
-  box-sizing: border-box;
-  padding: 0 16px;
 }
 
 .button:hover {
   background-color: #163f93;
-}
-
-.reject {
-  background-color: #b51e1e;
-}
-
-.reject:hover {
-  background-color: #8a1616;
-}
-
-.icon-btn {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
 }
 
 .nenhum-projeto {
@@ -219,32 +333,5 @@ onMounted(carregarProjetos)
   color: #333;
   margin-top: 2rem;
   text-align: center;
-}
-
-@media (max-width: 720px) {
-  .projeto-card {
-    width: 95%;
-    padding: 1.5rem;
-  }
-
-  .botoes-container {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .button {
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-
-  .icon-column {
-    width: 36px;
-  }
-
-  .projeto-card-title {
-    font-size: 1.25rem;
-  }
 }
 </style>

@@ -1,15 +1,14 @@
-<template>
+<template> 
   <div class="home-container">
-    <p v-if="projetos.length === 0" class="nenhum-projeto">
+    <p v-if="projetosFiltrados.length === 0" class="nenhum-projeto">
       Nenhum projeto liberado para votação.
     </p>
-
+    
     <div
       v-else
-      v-for="projeto in projetos"
+      v-for="projeto in projetosFiltrados"
       :key="projeto.id"
       class="projeto-card">
-
       <div class="projeto-top">
         <div class="icon-column">
           <img src="../../assets/images/info.png" alt="Informações" class="info-icon" />
@@ -43,16 +42,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import api from "../../services/api.js"
 
 const router = useRouter()
 const projetos = ref([])
 
+const projetosFiltrados = computed(() =>
+  projetos.value.filter(p => p.estado_projeto === 1)
+)
+
 const carregarProjetos = async () => {
   try {
-    const response = await api.get("/projetos?estado=liberado")
+    const response = await api.get("/projetos") // <<< busca tudo
     projetos.value = response.data
   } catch (erro) {
     console.error("Erro ao carregar projetos:", erro)
@@ -67,10 +70,7 @@ const formatarData = (data) => new Date(data).toLocaleDateString("pt-BR")
 
 onMounted(() => {
   carregarProjetos()
-
-  setInterval(() => {
-    carregarProjetos()
-  }, 60000)
+  setInterval(carregarProjetos, 60000)
 })
 </script>
 
