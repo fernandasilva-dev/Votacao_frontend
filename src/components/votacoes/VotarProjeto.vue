@@ -84,15 +84,15 @@ const props = defineProps({
 });
 
 const optionMap = {
-  0: 'sim',
-  1: 'nao',
-  2: 'abstencao'
+  1: 'sim',
+  2: 'nao',
+  3: 'abstencao'
 };
 
 const reverseOptionMap = {
-  sim: 0,
-  nao: 1,
-  abstencao: 2
+  sim: 1,
+  nao: 2,
+  abstencao: 3
 };
 
 const usuario = ref(null)
