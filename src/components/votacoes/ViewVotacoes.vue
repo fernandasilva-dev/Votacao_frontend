@@ -60,7 +60,7 @@ const carregarProjetos = async () => {
 }
 
 const irParaVotacao = (id) => {
-  router.push(`/votacao/${id}`)
+  router.push({ name: 'VotacaoProjeto', params: { id } })
 }
 
 const formatarData = (data) => new Date(data).toLocaleDateString("pt-BR")
@@ -70,7 +70,7 @@ onMounted(() => {
 
   setInterval(() => {
     carregarProjetos()
-  }, 10000)
+  }, 60000)
 })
 </script>
 

@@ -16,6 +16,8 @@ const routes = [
       { path: '', redirect: 'dashboard' },
       { path: 'dashboard', name: 'Votacoes', component: () => import('../views/Vereador/Votacoes.vue') },
       { path: 'profile-vereador', name: 'ProfileVereador', component: () => import('../views/Vereador/ProfileVereador.vue') },
+      { path: 'votacao/:id', name: 'VotacaoProjeto', component: () => import('../views/Vereador/VotacaoProjeto.vue'), props: route => ({ projetoId: route.params.id }) }
+
     ]
   },
   {
