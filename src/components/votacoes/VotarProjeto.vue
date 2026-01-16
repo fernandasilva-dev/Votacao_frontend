@@ -19,7 +19,7 @@
         A votação foi encerrada. Não é possível registrar novos votos.
       </div>
 
-      <div class="opcoes" :aria-hidden="votacaoEncerrada">
+      <div class="opcoes">
         <button
           class="btn btn-sim"
           :disabled="isSubmitting || votacaoEncerrada || jaVotou"
@@ -46,23 +46,7 @@
       </div>
 
       <div v-if="jaVotou && !votacaoEncerrada" class="info">
-        Você já votou neste projeto — voto: <strong>{{ votoUsuario?.opcao }}</strong>
-      </div>
-
-      <div class="estatisticas" v-if="totalVotos >= 0">
-        <h3>Contagem de votos</h3>
-        <div class="linha-voto" v-for="opt in opcaoList" :key="opt.key">
-          <div class="legenda">
-            <span class="label">{{ opt.label }}</span>
-            <span class="count">{{ counts[opt.key] ?? 0 }} votos</span>
-            <span class="percent">({{ percent(opt.key) }}%)</span>
-          </div>
-          <div class="barra">
-            <div class="barra-preenchida" :style="{ width: percent(opt.key) + '%' }"></div>
-          </div>
-        </div>
-
-        <p class="total">Total de votos: {{ totalVotos }}</p>
+        Você já votou neste projeto!
       </div>
 
       <div v-if="mensagem" :class="['mensagem', mensagemTipo]">
@@ -73,27 +57,21 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import api from "../../services/api.js"
+import { ref, computed, onMounted } from 'vue'
+import api from '../../services/api.js'
 
 const props = defineProps({
   projetoId: {
     type: String,
     required: true
   }
-});
-
-const optionMap = {
-  1: 'sim',
-  2: 'nao',
-  3: 'abstencao'
-};
+})
 
 const reverseOptionMap = {
   sim: 1,
   nao: 2,
   abstencao: 3
-};
+}
 
 const usuario = ref(null)
 const projeto = ref(null)
@@ -103,26 +81,13 @@ const loading = ref(true)
 const isSubmitting = ref(false)
 const mensagem = ref('')
 const mensagemTipo = ref('')
-const pollInterval = ref(null)
 const votacaoEncerrada = ref(false)
 
 const jaVotou = computed(() => !!votoUsuario.value)
 
-const opcaoList = [
-  { key: 'sim', label: 'Sim' },
-  { key: 'nao', label: 'Não' },
-  { key: 'abstencao', label: 'Abstenção' }
-]
-
 const carregarUsuario = async () => {
-  try {
-    const resp = await api.get('/me')
-    usuario.value = resp.data
-  } catch (err) {
-    console.error("Erro ao carregar usuário logado:", err)
-    mensagem.value = "Erro ao identificar o usuário logado."
-    mensagemTipo.value = "erro"
-  }
+  const resp = await api.get('/me')
+  usuario.value = resp.data
 }
 
 const carregarDados = async () => {
@@ -130,17 +95,17 @@ const carregarDados = async () => {
   try {
     const projetoResp = await api.get(`/projetos/${props.projetoId}`)
     projeto.value = projetoResp.data
-
     votacaoEncerrada.value = projeto.value?.estado !== 1
 
-    await carregarVotos()
+    const votosResp = await api.get('/votos', {
+      params: { projeto_id: props.projetoId }
+    })
 
+    votos.value = votosResp.data || []
     votoUsuario.value = votos.value.find(
       v => String(v.usuario_id) === String(usuario.value?.id)
     ) || null
-
   } catch (err) {
-    console.error('Erro ao carregar dados:', err)
     mensagem.value = 'Erro ao carregar dados da votação.'
     mensagemTipo.value = 'erro'
   } finally {
@@ -148,59 +113,9 @@ const carregarDados = async () => {
   }
 }
 
-const carregarVotos = async () => {
-  try {
-    const resp = await api.get('/votos', {
-      params: { projeto_id: props.projetoId }
-    })
-
-    votos.value = resp.data || []
-
-    if (usuario.value) {
-      votoUsuario.value = votos.value.find(
-        v => String(v.usuario_id) === String(usuario.value.id)
-      ) || null
-    }
-
-  } catch (err) {
-    console.error('Erro ao carregar votos:', err)
-    mensagem.value = 'Não foi possível atualizar os votos.'
-    mensagemTipo.value = 'erro'
-  }
-}
-
-const counts = computed(() => {
-  const map = { sim: 0, nao: 0, abstencao: 0 }
-
-  votos.value.forEach(v => {
-    const opcaoTexto = optionMap[v.opcao]
-    if (opcaoTexto && map[opcaoTexto] !== undefined) {
-      map[opcaoTexto]++
-    }
-  })
-
-  return map
-})
-
-const totalVotos = computed(() =>
-  counts.value.sim + counts.value.nao + counts.value.abstencao
-)
-
-const percent = (key) => {
-  const total = totalVotos.value
-  if (total === 0) return 0
-  return Math.round((counts.value[key] / total) * 100)
-}
-
 const confirmarEVotar = async (opcao) => {
   const ok = window.confirm(`Confirma seu voto: ${opcao}?`)
   if (!ok) return
-
-  if (!usuario.value) {
-    mensagem.value = "Usuário não identificado."
-    mensagemTipo.value = "erro"
-    return
-  }
 
   if (jaVotou.value) {
     mensagem.value = 'Você já votou neste projeto.'
@@ -220,31 +135,18 @@ const confirmarEVotar = async (opcao) => {
     mensagem.value = 'Voto registrado com sucesso!'
     mensagemTipo.value = 'sucesso'
 
-    await carregarVotos()
-
+    votoUsuario.value = { opcao }
   } catch (err) {
-    console.error('Erro ao registrar voto:', err)
-    mensagem.value = err?.response?.data?.mensagem || 'Erro ao registrar voto.'
+    mensagem.value = 'Erro ao registrar voto.'
     mensagemTipo.value = 'erro'
   } finally {
     isSubmitting.value = false
   }
 }
 
-const iniciarPolling = () => {
-  pollInterval.value = setInterval(async () => {
-    await carregarVotos()
-  }, 5000)
-}
-
 onMounted(async () => {
   await carregarUsuario()
   await carregarDados()
-  iniciarPolling()
-})
-
-onUnmounted(() => {
-  if (pollInterval.value) clearInterval(pollInterval.value)
 })
 </script>
 
