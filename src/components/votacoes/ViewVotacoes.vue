@@ -23,9 +23,13 @@
             <p><b>Data:</b> {{ formatarData(projeto.dt_votacao) }}</p>
           </div>
 
-          <p class="status-text status-aprovacao">
-            Aberto para votação
+          <p
+            class="status-text"
+            :class="projeto.estado === 1 ? 'status-aberto' : 'status-encerrado'"
+          >
+            {{ projeto.estado === 1 ? 'Votação Aberta' : 'Votação Encerrada' }}
           </p>
+
 
           <div class="botoes-container">
             <button @click="irParaVotacao(projeto.id)" class="button votar">
@@ -51,8 +55,7 @@ const route = useRoute()
 const projetos = ref([])
 
 const projetosFiltrados = computed(() =>
-  projetos.value.filter(p => p.estado === 1)
-)
+  projetos.value)
 
 const carregarProjetos = async () => {
   try {
@@ -135,7 +138,14 @@ onMounted(() => {
   margin-top: 1.9rem;
   font-weight: 600;
   font-size: 1.3rem;
-  color: #1e50b5;
+}
+
+.status-aberto {
+  color: #0d820d;
+}
+
+.status-encerrado {
+  color: #b51e1e;
 }
 
 .botoes-container {

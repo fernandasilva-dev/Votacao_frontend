@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router'
-import VotarProjeto from '../../components/votacoes/VotarProjeto.vue'
+import ResultadoVotacao from '../../components/votacoes/ResultadoVotacao.vue'
 
 const route = useRoute()
 </script>
@@ -8,6 +8,6 @@ const route = useRoute()
 <template>
   <div class="home-container">
     <h1 class="fullscreen-title">Projeto</h1>
-    <VotarProjeto :projetoId="route.params.id" />
+    <ResultadoVotacao :projetoId="route.params.id" />
   </div>
 </template>
