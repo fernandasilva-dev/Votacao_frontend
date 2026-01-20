@@ -186,12 +186,6 @@ baseURL: 'http://localhost:3000/api'
 npm run dev
 ```
 
-📍 Acesse em:
-
-```
-http://localhost:5173
-```
-
 ---
 
 ## 🔐 Segurança e Controle de Acesso
