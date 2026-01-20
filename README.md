@@ -158,7 +158,7 @@ src/
 ### 1️⃣ Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/Votacao_frontend.git
+git clone https://github.com/fernandasilva-dev/Votacao_frontend.git
 cd Votacao_frontend
 ```
 
