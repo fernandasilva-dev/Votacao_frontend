@@ -6,7 +6,6 @@ import DashboardAdmin from '../views/Admin/DashboardAdmin.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
-  { path: '/cadastro', name: 'Cadastro', component: CadastroView },
 
   {
     path: '/vereador',
@@ -26,6 +25,7 @@ const routes = [
     meta: {requiresAuth: true, role: 'admin'},
     children: [
       { path: '', redirect: 'dashboard' },
+      { path: 'cadastro', name: 'Cadastro', component: CadastroView },
       { path: 'dashboard', name: 'VotacoesAdmin', component: () => import('../views/Admin/Votacoes.vue') },
       { path: 'cadastrar-partido', name: 'AdminCadastrarPartido', component: () => import('../views/Admin/CadastrarPartido.vue') },
       { path: 'aprovar-projeto', name: 'AprovacaoAdmin', component: () => import('../views/Admin/AprovacaoAdmin.vue')},

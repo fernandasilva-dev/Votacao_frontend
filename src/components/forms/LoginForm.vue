@@ -75,11 +75,6 @@ const logout = async () => {
 
           <button type="submit" class="button">Entrar</button>
         </form>
-
-        <p class="link">
-          <router-link to="/cadastro">Não tem uma conta? Cadastre-se</router-link>
-        </p>
-
         <p class="mensagem" v-if="mensagem">{{ mensagem }}</p>
       </div>
     </div>

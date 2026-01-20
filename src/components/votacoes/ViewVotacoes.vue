@@ -55,7 +55,8 @@ const route = useRoute()
 const projetos = ref([])
 
 const projetosFiltrados = computed(() =>
-  projetos.value)
+  projetos.value.filter(projeto => projeto.estado === 0 || projeto.estado === 1)
+)
 
 const carregarProjetos = async () => {
   try {

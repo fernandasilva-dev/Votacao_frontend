@@ -35,15 +35,13 @@ const cadastrar = async () => {
       partido_id: partidoSelecionado,
     })
 
-    localStorage.setItem('usuarioLogado', JSON.stringify(response.data.usuario))
-    mensagem.value = response.data.mensagem || 'Cadastro realizado com sucesso!'
+    mensagem.value = response.data.mensagem || 'Vereador cadastrado com sucesso!'
 
     nome.value = ''
     cpf.value = ''
     email.value = ''
     senha.value = ''
     partido_id.value = ''
-    router.push('/login')
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar.'
   }
@@ -53,7 +51,7 @@ const cadastrar = async () => {
 <template>
   <div class="auth-container">
     <div class="auth-content">
-      <h2 class="title">Cadastro</h2>
+      <h2 class="title-cor">Cadastrar Vereador</h2>
 
       <div class="auth-form">
         <form @submit.prevent="cadastrar">
@@ -70,7 +68,6 @@ const cadastrar = async () => {
           <select v-model="partido_id">
             <option value="">Sem partido (Administrador)</option>
 
-            <!-- LISTA CARREGADA DO BANCO -->
             <option v-for="p in partidos" :key="p.id" :value="p.id">
               {{ p.nome }}
             </option>
@@ -90,10 +87,6 @@ const cadastrar = async () => {
           </ul>
 
           <button type="submit" class="button">Cadastrar</button>
-
-          <p class="link">
-            <router-link to="/login">Tem uma conta? Entre</router-link>
-          </p>
 
           <p class="mensagem" v-if="mensagem">{{ mensagem }}</p>
         </form>

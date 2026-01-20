@@ -17,6 +17,11 @@
         <span>Cadastrar Projeto</span>
       </router-link>
 
+      <router-link to="/admin/cadastro" class="menu-item" active-class="active">
+        <img src="../../assets/images/perfil.png" alt="" class="menu-icon">
+        <span>Cadastrar Vereador</span>
+      </router-link>
+
       <router-link to="/admin/aprovar-projeto" class="menu-item" active-class="active">
         <img src="../../assets/images/meuprojeto.png" alt="" class="menu-icon">
         <span>Projetos em Análise</span>
