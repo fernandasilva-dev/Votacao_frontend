@@ -96,7 +96,7 @@ O frontend foi construído com **Vue 3 + Composition API**, priorizando:
 
 ### Estilização
 
-* CSS organizado por responsabilidade
+* CSS 
 * Layout responsivo
 * Componentes reutilizáveis
 
@@ -206,4 +206,5 @@ http://localhost:5173
 ## 👩‍💻 Autora
 
 **Maria Fernanda**
+---
 Projeto acadêmico – Sistema de Votação Legislativa
