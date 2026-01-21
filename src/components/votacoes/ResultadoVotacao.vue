@@ -15,58 +15,56 @@
     <div v-if="loading" class="loading">Carregando resultados...</div>
 
     <div v-else>
-        <div v-if="!votacaoEncerrada" class="alert info">
+      <div v-if="!votacaoEncerrada" class="alert info">
         A votação ainda está em andamento.
-        </div>
+      </div>
 
-        <div v-else class="alert encerrada">
+      <div v-else class="alert encerrada">
         A votação foi encerrada. Confira abaixo o resultado final.
-        </div>
-
+      </div>
 
       <div class="estatisticas" v-if="totalVotos > 0">
         <h3>Resultado da Votação</h3>
 
         <div class="grafico-pizza">
-            <Pie :data="chartData" :options="chartOptions" />
+          <Pie :data="chartData" :options="chartOptions" />
         </div>
 
         <div class="barra">
-            <span>Sim ({{ resultado.sim }})</span>
-            <div
+          <span>Sim ({{ resultado.sim }})</span>
+          <div
             class="barra-preenchida sim"
             :style="{ width: percentualSim + '%' }"
-            ></div>
+          ></div>
         </div>
 
         <div class="barra">
-            <span>Não ({{ resultado.nao }})</span>
-            <div
+          <span>Não ({{ resultado.nao }})</span>
+          <div
             class="barra-preenchida nao"
             :style="{ width: percentualNao + '%' }"
-            ></div>
+          ></div>
         </div>
 
         <div class="barra">
-            <span>Abstenção ({{ resultado.abstencao }})</span>
-            <div
+          <span>Abstenção ({{ resultado.abstencao }})</span>
+          <div
             class="barra-preenchida abstencao"
             :style="{ width: percentualAbstencao + '%' }"
-            ></div>
+          ></div>
         </div>
+
+        <!-- BOTÃO GERAR RELATÓRIO -->
+        <div v-if="projeto?.estado === 0" class="acao-relatorio">
+          <button class="form-button btn-relatorio" @click="abrirRelatorio = true">
+            Gerar Relatório
+          </button>
+
         </div>
+      </div>
 
       <div v-else class="info">
         Nenhum voto registrado até o momento.
-      </div>
-
-      <div v-if="isAdmin && votos.length">
-        <h4>Votos Registrados</h4>
-        <ul>
-          <li v-for="voto in votos" :key="voto.id">
-            Usuário {{ voto.usuario_id }} – {{ mapOpcao(voto.opcao) }}
-          </li>
-        </ul>
       </div>
 
       <div v-if="mensagem" :class="['mensagem', mensagemTipo]">
@@ -74,6 +72,34 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL POPUP -->
+<div v-if="abrirRelatorio" class="overlay">
+  <div class="popup auth-form">
+    <h3 class="title">Gerar Relatório</h3>
+
+    <p>Formato do relatório</p>
+
+    <label class="radio">
+      <input type="radio" value="pdf" v-model="tipoRelatorio" />
+      PDF
+    </label>
+
+    <label class="radio">
+      <input type="radio" value="csv" v-model="tipoRelatorio" />
+      CSV
+    </label>
+
+    <button class="form-button" @click="gerarRelatorio">
+      Gerar Relatório
+    </button>
+
+    <button class="btn-fechar" @click="abrirRelatorio = false">
+      Cancelar
+    </button>
+  </div>
+</div>
+
 </template>
 
 <script setup>
@@ -105,6 +131,9 @@ const loading = ref(true)
 const mensagem = ref('')
 const mensagemTipo = ref('')
 const votacaoEncerrada = ref(false)
+
+const abrirRelatorio = ref(false)
+const tipoRelatorio = ref('pdf')
 
 const resultado = ref({
   sim: 0,
@@ -171,6 +200,31 @@ const carregarDados = async () => {
     mensagemTipo.value = 'erro'
   } finally {
     loading.value = false
+  }
+}
+
+const gerarRelatorio = async () => {
+  try {
+    const endpoint =
+      tipoRelatorio.value === 'pdf'
+        ? `/projetos/${props.projetoId}/relatorioPdf`
+        : `/projetos/${props.projetoId}/relatorioCsv`
+
+    const response = await api.get(endpoint, { responseType: 'blob' })
+
+    const url = URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.download =
+      tipoRelatorio.value === 'pdf'
+        ? `relatorio_projeto_${props.projetoId}.pdf`
+        : `relatorio_projeto_${props.projetoId}.csv`
+    link.click()
+
+    abrirRelatorio.value = false
+  } catch {
+    mensagem.value = 'Erro ao gerar relatório.'
+    mensagemTipo.value = 'erro'
   }
 }
 
@@ -309,8 +363,121 @@ li {
   color: #1c4c7a;
 }
 
-.loading {
-  font-style: italic;
-  color: #666;
+.acao-relatorio {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-relatorio {
+  width: auto;
+  padding: 12px 20px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 110%;
+  height: 150%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  z-index: 999;
+}
+
+.popup {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  width: 90%;
+  max-width: 450px;
+  padding: 25px 30px;
+  border-radius: 16px;
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.25);
+  animation: popupShow 0.18s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup .title {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #1e50b5;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+@keyframes popupShow {
+  from {
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.popup p {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 14px 0;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.radio input[type="radio"] {
+  accent-color: #1e50b5;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.form-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #1e50b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.form-button:hover {
+  background-color: #163f93;
+}
+
+.btn-fechar {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  background-color: #838383;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-fechar:hover {
+  background-color: #666666;
 }
 </style>
