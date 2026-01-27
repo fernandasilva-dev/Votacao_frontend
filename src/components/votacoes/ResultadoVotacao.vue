@@ -480,4 +480,90 @@ li {
 .btn-fechar:hover {
   background-color: #666666;
 }
+
+@media (max-width: 768px) {
+  .votacao-card {
+    padding: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .descricao {
+    font-size: 0.95rem;
+  }
+
+  .grafico-pizza {
+    max-width: 260px;
+  }
+
+  .barra {
+    height: 34px;
+  }
+
+  .barra span {
+    font-size: 0.9rem;
+  }
+
+  .acao-relatorio {
+    justify-content: center;
+  }
+
+  .btn-relatorio {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .votacao-card {
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+  }
+
+  .tipo,
+  .autor,
+  .descricao {
+    font-size: 0.9rem;
+  }
+
+  .estatisticas h3 {
+    font-size: 1.05rem;
+  }
+
+  .grafico-pizza {
+    max-width: 100%;
+  }
+
+  .barra {
+    height: 30px;
+  }
+
+  .barra span {
+    font-size: 0.85rem;
+  }
+
+  .alert {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .mensagem {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  
+  .popup {
+    top: 20%;
+    width: 70%;
+    padding: 20px;
+  }
+
+  .popup .title {
+    font-size: 1.1rem;
+  }
+}
 </style>
