@@ -1,5 +1,9 @@
 <template>
-  <aside class="sidebar">
+  <button class="hamburger" @click="toggleSidebar">
+  ☰
+</button>
+
+<aside class="sidebar" :class="{ open: sidebarOpen }">
 
     <nav class="menu">
       <router-link to="/admin/dashboard" class="menu-item" active-class="active">
@@ -53,6 +57,12 @@ const router = useRouter()
 const showMenu = ref(false)
 const usuario = ref(null)
 
+const sidebarOpen = ref(false)
+
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+}
+
 onMounted(async () => {
   try {
     const response = await api.get('/me')
@@ -83,13 +93,6 @@ const logout = async () => {
 </script>
 
 <style>
-.profile-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 10px;
-  position: relative;
-  cursor: pointer;
-}
-
 .profile-dropdown {
   position: absolute;
   bottom: 70px;
@@ -112,5 +115,44 @@ const logout = async () => {
 
 .profile-dropdown button:hover {
   background: #d3d3d3;
+}
+
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #163f93;
+  color: #fff;
+  font-size: 26px;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    height: 100dvh;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .hamburger {
+    display: flex;
+  }
 }
 </style>
