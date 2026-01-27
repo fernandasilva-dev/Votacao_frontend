@@ -154,5 +154,8 @@ const logout = async () => {
   .hamburger {
     display: flex;
   }
+  .menu {
+    padding-top: 72px;
+  }
 }
 </style>
