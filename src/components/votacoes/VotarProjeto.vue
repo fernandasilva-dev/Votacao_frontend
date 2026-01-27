@@ -54,11 +54,39 @@
       </div>
     </div>
   </div>
+  <div v-if="mostrarConfirmacao" class="overlay">
+    <div class="popup auth-form">
+      <h3 class="title">Confirmar voto</h3>
+
+      <p class="texto-confirmacao">
+        Você confirma seu voto como:
+        <strong>{{ opcaoSelecionadaTexto }}</strong>?
+      </p>
+
+      <button class="form-button" @click="registrarVoto">
+        Confirmar voto
+      </button>
+
+      <button class="btn-fechar" @click="cancelarConfirmacao">
+        Cancelar
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api.js'
+
+const mostrarConfirmacao = ref(false)
+const opcaoSelecionada = ref(null)
+
+const opcaoSelecionadaTexto = computed(() => {
+  if (opcaoSelecionada.value === 'sim') return 'Sim'
+  if (opcaoSelecionada.value === 'nao') return 'Não'
+  if (opcaoSelecionada.value === 'abstencao') return 'Abstenção'
+  return ''
+})
 
 const props = defineProps({
   projetoId: {
@@ -113,35 +141,44 @@ const carregarDados = async () => {
   }
 }
 
-const confirmarEVotar = async (opcao) => {
-  const ok = window.confirm(`Confirma seu voto: ${opcao}?`)
-  if (!ok) return
-
+const confirmarEVotar = (opcao) => {
   if (jaVotou.value) {
     mensagem.value = 'Você já votou neste projeto.'
     mensagemTipo.value = 'info'
     return
   }
 
+  opcaoSelecionada.value = opcao
+  mostrarConfirmacao.value = true
+}
+
+const registrarVoto = async () => {
   isSubmitting.value = true
 
   try {
     await api.post('/votos', {
       usuario_id: usuario.value.id,
       projeto_id: props.projetoId,
-      opcao: reverseOptionMap[opcao]
+      opcao: reverseOptionMap[opcaoSelecionada.value]
     })
 
     mensagem.value = 'Voto registrado com sucesso!'
     mensagemTipo.value = 'sucesso'
+    votoUsuario.value = { opcao: opcaoSelecionada.value }
 
-    votoUsuario.value = { opcao }
   } catch (err) {
     mensagem.value = 'Erro ao registrar voto.'
     mensagemTipo.value = 'erro'
   } finally {
     isSubmitting.value = false
+    mostrarConfirmacao.value = false
+    opcaoSelecionada.value = null
   }
+}
+
+const cancelarConfirmacao = () => {
+  mostrarConfirmacao.value = false
+  opcaoSelecionada.value = null
 }
 
 onMounted(async () => {
@@ -155,9 +192,19 @@ onMounted(async () => {
   border: 1px solid #e0e0e0;
   padding: 2rem;
   border-radius: 8px;
-  max-width: auto;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.votacao-card h2 {
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .tipo { 
@@ -294,5 +341,160 @@ onMounted(async () => {
   color: #666;
   margin-bottom: .8rem;
   line-height: 1.4rem;
+}
+
+@media (max-width: 768px) {
+  .votacao-card {
+    padding: 1.2rem;
+    border-radius: 10px;
+  }
+
+  .opcoes {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    line-height: 1.4;
+  }
+
+  .descricao {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .autor,
+  .tipo {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .votacao-card {
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  .btn {
+    font-size: 0.95rem;
+  }
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(3px);
+  z-index: 999;
+}
+
+.popup {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  overflow-y: auto;
+  animation: popupShow 0.2s ease-out;
+}
+
+.popup::-webkit-scrollbar {
+  width: 6px;
+}
+.popup::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.popup h3 {
+  text-align: center;
+  color: #1e50b5;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-button,
+.btn-fechar {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.form-button {
+  background-color: #1e50b5;
+  color: white;
+}
+
+.form-button:hover {
+  background-color: #163f93;
+}
+
+.btn-fechar {
+  background-color: #8a8a8a;
+  color: white;
+}
+
+.btn-fechar:hover {
+  background-color: #6b6b6b;
+}
+
+.erro {
+  text-align: center;
+  color: #d63031;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .popup {
+    max-height: 95vh;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .popup h3 {
+    font-size: 1.1rem;
+  }
+
+  .form-button,
+  .btn-fechar {
+    font-size: 0.95rem;
+  }
+
+  .senha-requisitos {
+    font-size: 0.85rem;
+  }
 }
 </style>

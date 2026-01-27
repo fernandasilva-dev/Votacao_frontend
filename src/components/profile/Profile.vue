@@ -250,18 +250,18 @@ onMounted(() => {
 }
 
 .popup {
-    position: fixed;
-  top: 20%;
-  left: 43%;
+  position: relative;
   background: #ffffff;
   width: 90%;
   max-width: 450px;
+  max-height: 90vh;
   padding: 25px 30px;
   border-radius: 16px;
   box-shadow: 0px 6px 16px rgba(0,0,0,0.25);
   animation: popupShow 0.18s ease-out;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .popup h3 {
@@ -340,5 +340,42 @@ onMounted(() => {
 .image {
   display: block;
   margin: 0 auto 20px auto;
+}
+
+@media (max-width: 768px) {
+  .popup {
+    width: 92%;
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .popup h3 {
+    font-size: 1.2rem;
+  }
+
+  .form-input {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .form-button,
+  .btn-fechar {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .senha-requisitos {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .popup {
+    padding: 16px;
+  }
+
+  .popup h3 {
+    font-size: 1.1rem;
+  }
 }
 </style>
