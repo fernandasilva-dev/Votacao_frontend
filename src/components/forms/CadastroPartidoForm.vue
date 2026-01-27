@@ -127,9 +127,9 @@ const confirmarExclusao = async () => {
 
             <tbody>
               <tr v-for="partido in partidos" :key="partido.id">
-                <td>{{ partido.sigla }}</td>
-                <td>{{ partido.nome }}</td>
-                <td>
+                <td data-label="Sigla">{{ partido.sigla }}</td>
+                <td data-label="Nome">{{ partido.nome }}</td>
+                <td data-label="Vereadores">
                   <ul class="vereadores-list">
                     <li v-for="v in vereadoresDoPartido(partido.id)" :key="v.id">
                       {{ v.nome }}
@@ -140,7 +140,7 @@ const confirmarExclusao = async () => {
                   </ul>
                 </td>
 
-                <td class="acoes">
+                <td data-label="Ações" class="acoes">
                   <button class="btn-edit" @click="abrirPopupEditar(partido)">Editar</button>
                   <button class="btn-delete" @click="abrirPopupExcluir(partido.id)">Excluir</button>
                 </td>
@@ -216,8 +216,9 @@ const confirmarExclusao = async () => {
 .tabela-wrapper {
   width: 100%;
   overflow-x: auto;
+  overflow-y: visible;
   border-radius: 8px;
-  padding: 12px;
+  padding: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
@@ -333,5 +334,58 @@ const confirmarExclusao = async () => {
 
 .cancelar {
   background: #aaa;
+}
+
+@media (max-width: 768px) {
+  .tabela thead {
+    display: none;
+  }
+
+  .tabela,
+  .tabela tbody,
+  .tabela tr,
+  .tabela td {
+    display: block;
+    width: 95%;
+  }
+
+  .tabela tr {
+    border: 1px solid #1e50b5;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  .tabela td {
+    border: none;
+    padding: 6px 0;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .tabela td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+    color: #1e50b5;
+    font-size: 13px;
+  }
+
+  .acoes {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin-top: 8px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
 }
 </style>
