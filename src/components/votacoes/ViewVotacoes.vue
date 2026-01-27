@@ -18,7 +18,7 @@
 
           <div class="projeto-info">
             <p><b>Autor:</b> {{ projeto.autor }}</p>
-            <p><b>Ementa:</b> {{ projeto.ementa }}</p>
+            <p class="ementa"><b>Ementa:</b> {{ projeto.ementa }}</p>
             <p><b>Tipo:</b> {{ projeto.tipo }}</p>
             <p><b>Data:</b> {{ formatarData(projeto.dt_votacao) }}</p>
           </div>
@@ -32,7 +32,7 @@
 
 
           <div class="botoes-container">
-            <button @click="irParaVotacao(projeto.id)" class="button votar">
+            <button @click="irParaVotacao(projeto.id)" class="btn-card">
               ACESSAR
             </button>
           </div>
@@ -92,11 +92,12 @@ onMounted(() => {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.299);
   padding: 1rem 1.8rem 1.8rem 2rem;
   margin-bottom: 3rem;
-  transition: transform 0.18s ease;
   width: 100%;
   max-width: 998px;
+  display: flex;
+  flex-direction: column;
+  height: 350px;
   box-sizing: border-box;
-  justify-content: center;
 }
 
 .projeto-card:hover {
@@ -106,6 +107,22 @@ onMounted(() => {
 .projeto-top {
   display: flex;
   gap: 1.5rem;
+  height: 100%;
+}
+
+.content-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+}
+
+.ementa {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .icon-column {
@@ -150,10 +167,10 @@ onMounted(() => {
 }
 
 .botoes-container {
-  margin-top: 20px;
+  margin-top: auto;
 }
 
-.button {
+.btn-card {
   width: 100%;
   height: 45px;
   background-color: #1e50b5;
@@ -163,15 +180,13 @@ onMounted(() => {
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
   transition: background-color 0.2s ease;
-  padding: 0 16px;
 }
 
-.button:hover {
+.btn-card:hover {
   background-color: #163f93;
 }
 
@@ -190,12 +205,49 @@ onMounted(() => {
 
 @media (max-width: 720px) {
   .projeto-card {
-    width: 95%;
-    padding: 1.5rem;
+    height: auto;
+    min-height: unset;
+    padding: 1rem;
+    margin-bottom: 2rem;
   }
 
-  .button {
+  .projeto-top {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .icon-column {
     width: 100%;
+    justify-content: flex-start;
+  }
+
+  .info-icon {
+    padding: 0;
+    width: 24px;
+    height: 24px;
+  }
+
+  .projeto-card-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .projeto-info p {
+    font-size: 0.9rem;
+  }
+
+  .ementa {
+    -webkit-line-clamp: 4;
+  }
+
+  .status-text {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .btn-card {
+    height: 44px;
+    font-size: 0.95rem;
   }
 }
 </style>

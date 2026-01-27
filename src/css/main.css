@@ -133,21 +133,15 @@ select:focus {
   width: 240px;
   background-color: #1e50b5;
   color: white;
-
   display: flex;
   flex-direction: column;
-
-  height: 100dvh;
-  padding: 0;
-
-  overflow: hidden;
+  justify-content: space-between;
+  padding: 1.5rem 0;
 }
 
 .menu {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
 }
 
 .menu-item {
@@ -175,19 +169,11 @@ select:focus {
   height: 25px;
 }
 
-@media (max-width: 768px) {
-  .menu {
-    padding-top: 70px;
-  }
-}
-
 .profile-section {
-  flex-shrink: 0;
-  margin-top: auto;
-  padding: 12px 0;
-
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: #1e50b5;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .fullscreen-title {
@@ -218,6 +204,9 @@ select:focus {
 
 .home-container {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .home-container h1 {
