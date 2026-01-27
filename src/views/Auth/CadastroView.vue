@@ -3,7 +3,10 @@
 </script>
 
 <template>
-  <div>
-    <CadastroForm />
+  <div class="home-container">
+    <h1 class="fullscreen-title">Cadastrar Vereador</h1>
+    <div>
+        <CadastroForm />
+    </div>
   </div>
 </template>
