@@ -130,8 +130,9 @@ const carregarDados = async () => {
     })
 
     votos.value = votosResp.data || []
-    votoUsuario.value = votos.value.find(
-      v => String(v.usuario_id) === String(usuario.value?.id)
+    votoUsuario.value = votos.value.find(v =>
+      String(v.usuario_id) === String(usuario.value?.id) &&
+      String(v.projeto_id) === String(props.projetoId)
     ) || null
   } catch (err) {
     mensagem.value = 'Erro ao carregar dados da votação.'
