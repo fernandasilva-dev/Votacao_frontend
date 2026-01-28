@@ -59,6 +59,7 @@ O frontend foi construído com **Vue 3 + Composition API**, priorizando:
 
 * [✔] Gerenciar partidos políticos
 * [✔] Cadastrar projetos de lei
+* [✔] Cadastra Vereadores
 * [✔] Aprovar projetos para votação
 * [✔] Visualizar resultados completos
 * [✔] Ver votos individuais
