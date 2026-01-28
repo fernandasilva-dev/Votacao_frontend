@@ -36,7 +36,6 @@ A aplicação permite:
 O frontend foi construído com **Vue 3 + Composition API**, priorizando:
 
 * Componentização
-* Organização por domínio
 * Segurança
 * Clareza na navegação
 
