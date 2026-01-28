@@ -81,6 +81,7 @@ O frontend foi construído com **Vue 3 + Composition API**, priorizando:
 * [✔] Exibição de resultados
 * [✔] Gráficos de votação
 * [✔] Atualização automática
+* [✔] Geração de Relatórios(CSV ou PDF)
 
 ---
 
