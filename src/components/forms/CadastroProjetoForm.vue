@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted} from 'vue'
 import api from '../../services/api.js'
 import { useRouter } from 'vue-router'
 
@@ -12,6 +12,7 @@ const tipo = ref('')
 const dt_votacao = ref('')
 const mensagem = ref('')
 const userId = ref(null)
+const vereadores = ref([])
 
 const tiposProjeto = [
   { id: 1, nome: 'Lei Ordinária' },
@@ -19,6 +20,17 @@ const tiposProjeto = [
   { id: 3, nome: 'Emenda Constitucional' },
   { id: 4, nome: 'Resolução' },
 ]
+
+const carregarVereadores = async () => {
+  try {
+    const response = await api.get('/usuarios')
+    vereadores.value = response.data
+      .filter(u => u.tipo === 1) 
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+  } catch (error) {
+    console.error('Erro ao carregar vereadores:', error)
+  }
+}
 
 const verificarLogin = async () => {
   try {
@@ -32,7 +44,10 @@ const verificarLogin = async () => {
   }
 }
 
-verificarLogin()
+onMounted(() => {
+  verificarLogin()
+  carregarVereadores()
+})
 
 const cadastrarProjeto = async () => {
   try {
@@ -73,12 +88,12 @@ const cadastrarProjeto = async () => {
           <input v-model="titulo" type="text" placeholder="Digite o título do projeto" required />
 
           <p>Autor</p>
-          <input
-            v-model="autor"
-            type="text"
-            placeholder="Digite o nome do vereador autor do projeto"
-            required
-          />
+          <select v-model="autor" required>
+            <option disabled value="">Selecione o vereador</option>
+            <option v-for="v in vereadores" :key="v.id" :value="v.nome">
+              {{ v.nome }}
+            </option>
+          </select>
 
           <p>Ementa</p>
           <textarea v-model="ementa" placeholder="Descreva a ementa do projeto" required></textarea>
