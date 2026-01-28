@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '../../services/api.js'
 import { Pie } from 'vue-chartjs'
 import {
@@ -228,7 +228,17 @@ const gerarRelatorio = async () => {
   }
 }
 
-onMounted(carregarDados)
+let intervalId = null
+onMounted(() => {
+  carregarDados()
+  intervalId = setInterval(carregarDados, 60000)
+})
+
+onUnmounted(() => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+})
 </script>
 
 <style scoped>
